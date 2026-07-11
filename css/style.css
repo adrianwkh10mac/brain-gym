@@ -420,6 +420,7 @@ svg .blink {
 .rest-toggle { width: 100%; }
 .rest-toggle.on { border-color: var(--mint-deep); }
 .danger-btn { width: 100%; border-color: #E8A5B5; color: #C4526E; }
+.settings-version { text-align: center; font-size: 11.5px; color: var(--ink-soft); opacity: 0.6; margin-top: 4px; }
 
 /* ---------- 护眼休息 ---------- */
 .rest-panel { gap: 10px; }
@@ -551,7 +552,7 @@ svg .blink {
 
 /* ---------- 迷宫 ---------- */
 .maze-wrap { width: min(92vw, 380px); }
-.maze-svg { width: 100%; display: block; background: var(--white); border-radius: 14px; box-shadow: var(--shadow); }
+.maze-svg { width: 100%; display: block; background: var(--white); border-radius: 14px; box-shadow: var(--shadow); touch-action: none; }
 .maze-walls { stroke: var(--ink); stroke-width: 1.6; stroke-linecap: round; fill: none; }
 .maze-trail { stroke: var(--pink); stroke-width: 3; fill: none; stroke-linecap: round; stroke-linejoin: round; opacity: 0.5; }
 .maze-ball { fill: var(--pink-deep); transition: cx 0.15s ease, cy 0.15s ease; }

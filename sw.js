@@ -1,10 +1,14 @@
 // ===== Service Worker：离线缓存，装到手机后没网也能玩 =====
-const VERSION = 'brain-gym-v4';
+// 注意：浏览器判断"要不要更新"只看 sw.js 这个文件自身的字节内容有没有变化，
+// importScripts() 引入的文件变了不会触发更新检测。所以 VERSION 必须直接写在这里，
+// 不能只改 js/version.js。用 scripts/bump-version.js 一次性把两处一起改掉。
+const VERSION = 'brain-gym-v1.1.0';
 const ASSETS = [
   './',
   './index.html',
   './manifest.webmanifest',
   './css/style.css',
+  './js/version.js',
   './js/core.js',
   './js/gen.js',
   './js/boot.js',

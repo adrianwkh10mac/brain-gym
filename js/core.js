@@ -18,6 +18,9 @@ var BrainGym = (function () {
       if (raw) {
         const parsed = JSON.parse(raw);
         saveData = Object.assign(saveData, parsed);
+        if (typeof saveData.games !== 'object' || saveData.games === null || Array.isArray(saveData.games)) {
+          saveData.games = {};
+        }
         saveData.settings = Object.assign({ theme: 'light', rest: true }, parsed.settings);
       }
     } catch (e) { /* 隐私模式等场景下用内存模式 */ }
@@ -281,6 +284,7 @@ var BrainGym = (function () {
     const rest = $('btn-rest-toggle');
     rest.textContent = saveData.settings.rest ? '💚 已开启' : '⚪ 已关闭';
     rest.classList.toggle('on', saveData.settings.rest);
+    $('settings-version').textContent = `v${APP_VERSION} · ${APP_BUILD_DATE}`;
   }
 
   // ---------- 主页（按分类分区） ----------
@@ -311,7 +315,7 @@ var BrainGym = (function () {
           <span class="gc-icon">${def.icon}</span>
           <span class="gc-name">${def.name}</span>
           <span class="gc-tag">${def.tag}</span>
-          <span class="gc-record">${save.ending ? '👑 已通关 · 第 ' + save.challenge + ' 关'
+          <span class="gc-record">${save.ending || save.challenge >= FINAL_LEVEL ? '👑 已通关 · 第 ' + save.challenge + ' 关'
             : save.challenge ? '🏔️ 第 ' + save.challenge + '/30 关'
             : (save.plays ? '玩过 ' + save.plays + ' 次' : 'NEW!')}</span>`;
         card.onclick = () => openMode(id);

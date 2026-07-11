@@ -24,8 +24,10 @@ BrainGym.register({
     let state = [];   // 0 空 1 ✖ 2 👑
     let cellEls = [];
     let puzzle = null;
+    let cancelled = false;
 
-    setTimeout(() => {
+    const genTimer = setTimeout(() => {
+      if (cancelled) return;
       puzzle = BrainGym.gen.queens(n);
       if (!puzzle) { api.fail('出题失败了，换一关试试'); return; }
       state = new Array(n * n).fill(0);
@@ -91,5 +93,7 @@ BrainGym.register({
         api.win({ detail: `👑 ${n}×${n} 皇后全部就位，零冲突` });
       }
     }
+
+    return () => { cancelled = true; clearTimeout(genTimer); };
   },
 });

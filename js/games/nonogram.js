@@ -24,8 +24,10 @@ BrainGym.register({
     let state = [];   // 0 未知 1 已涂 2 打叉
     let cellEls = [], rowClueEls = [], colClueEls = [];
     let filled = 0, need = 0;
+    let cancelled = false;
 
-    setTimeout(() => {
+    const genTimer = setTimeout(() => {
+      if (cancelled) return;
       p = BrainGym.gen.nonogram(params.size);
       if (!p) { api.fail('出题失败了，换一关试试'); return; }
       need = p.solution.filter(v => v === 1).length;
@@ -118,7 +120,7 @@ BrainGym.register({
         b.classList.add('flash-wrong', 'marked');
         updateInfo();
         if (params.maxMistakes && mistakes >= params.maxMistakes) {
-          setTimeout(() => api.fail(`错了 ${mistakes} 次！这一格其实是空的`), 400);
+          setTimeout(() => { if (!cancelled) api.fail(`错了 ${mistakes} 次！这一格其实是空的`); }, 400);
         }
       }
     }
@@ -142,5 +144,7 @@ BrainGym.register({
       else if (mistakes) html += ` · 失误 ${mistakes} 次`;
       api.setInfo(html);
     }
+
+    return () => { cancelled = true; clearTimeout(genTimer); };
   },
 });

@@ -24,8 +24,10 @@ BrainGym.register({
     let puzzle, solution, current, notes;
     let selected = -1, mistakes = 0, pencil = false;
     let cells = [], keyBtns = [];
+    let cancelled = false;
 
-    setTimeout(() => {
+    const genTimer = setTimeout(() => {
+      if (cancelled) return;
       const p = BrainGym.gen.sudoku(params.holes);
       puzzle = p.puzzle; solution = p.solution;
       current = puzzle.slice();
@@ -156,5 +158,7 @@ BrainGym.register({
         }
       }
     }
+
+    return () => { cancelled = true; clearTimeout(genTimer); };
   },
 });

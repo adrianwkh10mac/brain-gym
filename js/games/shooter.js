@@ -21,7 +21,7 @@ BrainGym.register({
       perWave: Math.min(6 + Math.floor(lv / 2), 14),
       ehp: lv < 8 ? 1 : 2,
       fireRate: Math.max(750, 2100 - lv * 60),
-      boss: isBoss ? 24 + lv * 3 : 0,
+      boss: isBoss ? Math.min(24 + lv * 3, 180) : 0,
     };
   },
   start(host, params, api) {
