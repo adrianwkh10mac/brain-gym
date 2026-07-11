@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#FDF6EC">
+  <meta name="description" content="9 合 1 脑力训练游戏合集：数独、数织、皇后谜题、舒尔特方格……无限关卡，越玩越聪明">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <title>大脑体操馆</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="app">
+
+    <!-- 主页 -->
+    <section id="screen-home" class="screen active">
+      <header class="home-header">
+        <button id="btn-settings" class="icon-btn settings-btn">⚙️</button>
+        <div class="home-mascot">
+          <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="50" cy="90" rx="24" ry="4" fill="#000" opacity="0.07"/>
+            <path d="M 33 34 Q 29 16 41 22 Q 47 25 47 32 Z" fill="#7DDBC0"/>
+            <path d="M 67 34 Q 71 16 59 22 Q 53 25 53 32 Z" fill="#7DDBC0"/>
+            <ellipse cx="50" cy="58" rx="29" ry="30" fill="#7DDBC0"/>
+            <ellipse cx="50" cy="65" rx="21" ry="19" fill="#A8EDD9"/>
+            <g class="blink">
+              <circle cx="40" cy="52" r="4.5" fill="#5B4A56"/>
+              <circle cx="60" cy="52" r="4.5" fill="#5B4A56"/>
+              <circle cx="41.5" cy="50.5" r="1.5" fill="#fff"/>
+              <circle cx="61.5" cy="50.5" r="1.5" fill="#fff"/>
+            </g>
+            <ellipse cx="33" cy="60" rx="5" ry="3" fill="#FFB3C6" opacity="0.7"/>
+            <ellipse cx="67" cy="60" rx="5" ry="3" fill="#FFB3C6" opacity="0.7"/>
+            <path d="M 45 61 Q 50 66 55 61" stroke="#5B4A56" stroke-width="2" fill="none" stroke-linecap="round"/>
+            <path d="M 38 20 L 41 13 L 44 20 Z" fill="#FFD98E"/>
+            <circle cx="62" cy="14" r="3" fill="#F9A8C4"/>
+          </svg>
+        </div>
+        <h1 class="home-title">大脑体操馆</h1>
+        <p class="home-sub">每天练一练，脑子转得快</p>
+      </header>
+      <div id="home-stats" class="home-stats"></div>
+      <div id="game-sections" class="game-sections"></div>
+      <p class="home-foot">14 个游戏 · 无限关卡 · 离线可玩 · 成绩自动保存</p>
+    </section>
+
+    <!-- 游戏页 -->
+    <section id="screen-play" class="screen">
+      <header class="play-header">
+        <button id="btn-back" class="icon-btn">←</button>
+        <div class="play-title-box">
+          <span id="play-title" class="play-title"></span>
+          <span id="play-sub" class="play-sub"></span>
+        </div>
+        <div id="play-timer" class="play-timer">0:00</div>
+      </header>
+      <div id="play-info" class="play-info"></div>
+      <div id="game-host" class="game-host"></div>
+    </section>
+
+    <!-- 模式/难度选择弹层 -->
+    <div id="overlay-mode" class="overlay">
+      <div class="panel">
+        <div id="mode-icon" class="mode-icon"></div>
+        <h2 id="mode-title"></h2>
+        <p id="mode-desc" class="mode-desc"></p>
+        <div class="mode-section">
+          <h3>🎯 练习模式 <small>选个难度随便玩</small></h3>
+          <div id="mode-practice" class="mode-btns"></div>
+        </div>
+        <div class="mode-section">
+          <h3>🏔️ 闯关模式 <small>主线 30 关有 Boss 有大结局，通关后无限模式</small></h3>
+          <div id="mode-challenge" class="mode-btns"></div>
+        </div>
+        <button id="btn-mode-close" class="btn btn-ghost">返回</button>
+      </div>
+    </div>
+
+    <!-- 胜利/失败结算弹层 -->
+    <div id="overlay-result" class="overlay">
+      <div class="panel">
+        <h2 id="result-title"></h2>
+        <div id="result-stats" class="result-stats"></div>
+        <p id="result-record" class="result-record"></p>
+        <div class="result-btns">
+          <button id="btn-result-main" class="btn btn-big"></button>
+          <button id="btn-result-home" class="btn btn-ghost">回主页</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 设置弹层 -->
+    <div id="overlay-settings" class="overlay">
+      <div class="panel">
+        <h2>⚙️ 设置</h2>
+        <div class="mode-section">
+          <h3>🎨 主题外观 <small>护眼模式减少蓝光</small></h3>
+          <div id="theme-btns" class="mode-btns theme-grid">
+            <button class="btn theme-btn" data-theme="light"><span class="theme-dot dot-light"></span>标准</button>
+            <button class="btn theme-btn" data-theme="warm"><span class="theme-dot dot-warm"></span>护眼</button>
+            <button class="btn theme-btn" data-theme="dark"><span class="theme-dot dot-dark"></span>夜间</button>
+          </div>
+        </div>
+        <div class="mode-section">
+          <h3>👁️ 休息提醒 <small>每玩 20 分钟提醒休息一下</small></h3>
+          <button id="btn-rest-toggle" class="btn diff-btn rest-toggle"></button>
+        </div>
+        <div class="mode-section">
+          <h3>🗂️ 数据</h3>
+          <button id="btn-reset-save" class="btn diff-btn danger-btn">清空所有纪录</button>
+        </div>
+        <button id="btn-settings-close" class="btn btn-ghost">关闭</button>
+      </div>
+    </div>
+
+    <!-- 护眼休息弹层 -->
+    <div id="overlay-rest-eye" class="overlay overlay-top">
+      <div class="panel rest-panel">
+        <div class="rest-emoji">🌳</div>
+        <h2>眼睛休息时间</h2>
+        <p class="mode-desc">已经连续玩了 20 分钟啦！<br>看看 6 米以外的远处，眨眨眼睛，<br>让眼睛放松一下～</p>
+        <div id="rest-count" class="rest-count">20</div>
+        <button id="btn-rest-done" class="btn btn-big" style="display:none">休息好了，继续！</button>
+        <button id="btn-rest-skip" class="btn btn-ghost">跳过（不推荐哦）</button>
+      </div>
+    </div>
+
+    <div id="confetti-layer"></div>
+  </div>
+
+  <script src="js/core.js"></script>
+  <script src="js/gen.js"></script>
+  <script src="js/games/schulte.js"></script>
+  <script src="js/games/eagle.js"></script>
+  <script src="js/games/memory.js"></script>
+  <script src="js/games/slide.js"></script>
+  <script src="js/games/maze.js"></script>
+  <script src="js/games/sudoku.js"></script>
+  <script src="js/games/nonogram.js"></script>
+  <script src="js/games/flow.js"></script>
+  <script src="js/games/queens.js"></script>
+  <script src="js/games/snake.js"></script>
+  <script src="js/games/racer.js"></script>
+  <script src="js/games/shooter.js"></script>
+  <script src="js/games/jump.js"></script>
+  <script src="js/games/fruit.js"></script>
+  <script src="js/boot.js"></script>
+</body>
+</html>
