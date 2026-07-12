@@ -11,7 +11,8 @@ var BrainGym = (function () {
 
   // ---------- 存档（localStorage，失败时静默降级为内存模式） ----------
   const SAVE_KEY = 'brainGym.save.v1';
-  let saveData = { games: {}, totalPlays: 0, settings: { theme: 'light', rest: true } };
+  const LOG_MAX = 500; // 游玩记录最多保留 500 条，避免存档无限变大
+  let saveData = { games: {}, totalPlays: 0, settings: { theme: 'light', rest: true }, log: [] };
   function loadSave() {
     try {
       const raw = localStorage.getItem(SAVE_KEY);
@@ -21,6 +22,7 @@ var BrainGym = (function () {
         if (typeof saveData.games !== 'object' || saveData.games === null || Array.isArray(saveData.games)) {
           saveData.games = {};
         }
+        if (!Array.isArray(saveData.log)) saveData.log = [];
         saveData.settings = Object.assign({ theme: 'light', rest: true }, parsed.settings);
       }
     } catch (e) { /* 隐私模式等场景下用内存模式 */ }
@@ -85,7 +87,7 @@ var BrainGym = (function () {
     return timerFrozen !== null ? timerFrozen : Date.now() - timerStart;
   }
 
-  // ---------- 护眼休息提醒（20-20-20 法则，攒够 20 分钟在结算处提醒） ----------
+  // ---------- 护眼休息提醒（20-20-20 法则，玩满 20 分钟立刻提醒，不等对局结束） ----------
   const REST_AFTER = 20 * 60; // 秒
   let playSeconds = 0;
   let restCountdown = null;
@@ -93,7 +95,21 @@ var BrainGym = (function () {
     if (document.hidden) return;
     if (session && !session.done && $('screen-play').classList.contains('active')) {
       playSeconds++;
+      maybeRest();
     }
+    updateRestBar();
+  }
+  function updateRestBar() {
+    const bar = $('rest-bar');
+    const inPlay = session && !session.done && $('screen-play').classList.contains('active');
+    const show = saveData.settings.rest && inPlay && !$('overlay-rest-eye').classList.contains('active');
+    bar.classList.toggle('active', show);
+    if (!show) return;
+    const remain = Math.max(0, REST_AFTER - playSeconds);
+    const m = Math.floor(remain / 60), s = remain % 60;
+    $('rest-bar-text').textContent = `还可以玩 ${m}:${String(s).padStart(2, '0')}`;
+    $('rest-bar-fill').style.width = Math.min(100, playSeconds / REST_AFTER * 100) + '%';
+    $('rest-bar-fill').classList.toggle('soon', remain <= 120);
   }
   function maybeRest() {
     if (!saveData.settings.rest || playSeconds < REST_AFTER) return;
@@ -102,6 +118,7 @@ var BrainGym = (function () {
     $('rest-count').textContent = left;
     $('btn-rest-done').style.display = 'none';
     showOverlay('overlay-rest-eye', true);
+    updateRestBar();
     restCountdown = setInterval(() => {
       left--;
       if (left <= 0) {
@@ -116,12 +133,36 @@ var BrainGym = (function () {
   function closeRest() {
     if (restCountdown) { clearInterval(restCountdown); restCountdown = null; }
     showOverlay('overlay-rest-eye', false);
+    updateRestBar();
+  }
+
+  // ---------- 游玩记录（给家长看：什么时候玩的、玩了多久） ----------
+  function logPlaySession(s) {
+    const def = games[s.gameId];
+    const duration = Math.round(elapsed() / 1000);
+    if (duration < 3) return; // 少于 3 秒的误触不记录
+    saveData.log.unshift({
+      gameId: s.gameId,
+      name: def ? def.name : s.gameId,
+      icon: def ? def.icon : '🎮',
+      mode: s.mode,
+      level: s.level, diffKey: s.diffKey,
+      start: s.logStart,
+      duration,
+      outcome: s.outcome || 'left', // win | fail | left（中途退出）
+    });
+    if (saveData.log.length > LOG_MAX) saveData.log.length = LOG_MAX;
+    persist();
   }
 
   // ---------- 当前对局 ----------
-  let session = null; // {gameId, mode, diffKey, level, cleanup, done}
+  let session = null; // {gameId, mode, diffKey, level, cleanup, done, logStart, logged, outcome}
 
   function cleanupSession() {
+    if (session && !session.logged && session.logStart) {
+      logPlaySession(session);
+      session.logged = true;
+    }
     if (session && typeof session.cleanup === 'function') {
       try { session.cleanup(); } catch (e) { /* 清理失败不影响流程 */ }
     }
@@ -132,7 +173,7 @@ var BrainGym = (function () {
     cleanupSession();
     const def = games[gameId];
     if (!def) return;
-    session = { gameId, mode, done: false, cleanup: null };
+    session = { gameId, mode, done: false, cleanup: null, logStart: Date.now(), logged: false };
     let params, subLabel;
     if (mode === 'practice') {
       const diff = def.practice.find(d => d.key === opt) || def.practice[0];
@@ -154,6 +195,7 @@ var BrainGym = (function () {
     showOverlay('overlay-result', false);
     showScreen('screen-play');
     startTimer();
+    updateRestBar();
     session.cleanup = def.start(host, params, makeApi(session)) || null;
   }
 
@@ -173,6 +215,7 @@ var BrainGym = (function () {
 
   function finishWin(s, stats) {
     s.done = true;
+    s.outcome = 'win';
     timerFrozen = elapsed();
     cleanupSession();
     const def = games[s.gameId];
@@ -220,10 +263,12 @@ var BrainGym = (function () {
     else if (recordMsg.startsWith('🏆') || recordMsg.startsWith('🏔️')) confetti();
     showOverlay('overlay-result', true);
     maybeRest();
+    updateRestBar();
   }
 
   function finishFail(s, msg) {
     s.done = true;
+    s.outcome = 'fail';
     cleanupSession();
     const save = gameSave(s.gameId);
     save.plays++; saveData.totalPlays++;
@@ -236,6 +281,7 @@ var BrainGym = (function () {
     main.onclick = () => { closeRest(); startGame(s.gameId, s.mode, s.mode === 'practice' ? s.diffKey : s.level); };
     showOverlay('overlay-result', true);
     maybeRest();
+    updateRestBar();
   }
 
   // ---------- 模式选择弹层 ----------
@@ -285,6 +331,67 @@ var BrainGym = (function () {
     rest.textContent = saveData.settings.rest ? '💚 已开启' : '⚪ 已关闭';
     rest.classList.toggle('on', saveData.settings.rest);
     $('settings-version').textContent = `v${APP_VERSION} · ${APP_BUILD_DATE}`;
+  }
+
+  // ---------- 游玩记录查看（家长用） ----------
+  function formatLogDuration(sec) {
+    if (sec < 60) return `${sec}秒`;
+    const m = Math.floor(sec / 60), s = sec % 60;
+    return s > 0 ? `${m}分${s}秒` : `${m}分钟`;
+  }
+  function logDayLabel(ts) {
+    const d = new Date(ts), now = new Date();
+    const sameDay = (a, b) => a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+    const yesterday = new Date(now); yesterday.setDate(now.getDate() - 1);
+    if (sameDay(d, now)) return '今天';
+    if (sameDay(d, yesterday)) return '昨天';
+    return `${d.getMonth() + 1}月${d.getDate()}日`;
+  }
+  function logClockLabel(ts) {
+    const d = new Date(ts);
+    return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+  }
+  const OUTCOME_ICON = { win: '🎉', fail: '😵', left: '🚪' };
+  function renderLog() {
+    const log = saveData.log || [];
+    const list = $('log-list');
+    if (log.length === 0) {
+      list.innerHTML = '<div class="log-empty">还没有游玩记录</div>';
+      $('log-summary').textContent = '';
+      return;
+    }
+    const todaySecs = log.filter(e => logDayLabel(e.start) === '今天').reduce((sum, e) => sum + e.duration, 0);
+    $('log-summary').textContent = todaySecs > 0 ? `今天共玩了 ${formatLogDuration(todaySecs)}` : '今天还没玩过';
+
+    const groups = [];
+    let curLabel = null, curGroup = null;
+    log.forEach(e => {
+      const label = logDayLabel(e.start);
+      if (label !== curLabel) {
+        curLabel = label;
+        curGroup = { label, items: [], total: 0 };
+        groups.push(curGroup);
+      }
+      curGroup.items.push(e);
+      curGroup.total += e.duration;
+    });
+
+    list.innerHTML = groups.map(g => `
+      <div class="log-day">
+        <div class="log-day-title">${g.label} <span class="log-day-total">· 共 ${formatLogDuration(g.total)}</span></div>
+        ${g.items.map(e => `
+          <div class="log-row">
+            <span class="log-row-icon">${e.icon || '🎮'}</span>
+            <div class="log-row-main">
+              <div class="log-row-name">${e.name}</div>
+              <div class="log-row-time">${logClockLabel(e.start)} 开始</div>
+            </div>
+            <span class="log-row-dur">${formatLogDuration(e.duration)}</span>
+            <span class="log-row-outcome">${OUTCOME_ICON[e.outcome] || '🚪'}</span>
+          </div>
+        `).join('')}
+      </div>
+    `).join('');
   }
 
   // ---------- 主页（按分类分区） ----------
@@ -381,15 +488,26 @@ var BrainGym = (function () {
       saveData.settings.rest = !saveData.settings.rest;
       persist();
       renderSettings();
+      updateRestBar();
     };
     $('btn-reset-save').onclick = () => {
-      if (confirm('确定要清空所有游戏纪录吗？（主题设置会保留）')) {
+      if (confirm('确定要清空所有游戏纪录和游玩记录吗？（主题设置会保留）')) {
         const settings = saveData.settings;
-        saveData = { games: {}, totalPlays: 0, settings };
+        saveData = { games: {}, totalPlays: 0, settings, log: [] };
         persist();
         renderHome();
         showOverlay('overlay-settings', false);
       }
+    };
+    // 游玩记录
+    $('btn-log-open').onclick = () => {
+      renderLog();
+      showOverlay('overlay-settings', false);
+      showOverlay('overlay-log', true);
+    };
+    $('btn-log-close').onclick = () => {
+      showOverlay('overlay-log', false);
+      showOverlay('overlay-settings', true);
     };
     // 护眼休息
     $('btn-rest-done').onclick = closeRest;

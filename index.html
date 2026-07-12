@@ -78,6 +78,11 @@
         </div>
         <div id="play-timer" class="play-timer">0:00</div>
       </header>
+      <div id="rest-bar" class="rest-bar">
+        <span class="rest-bar-icon">👁️</span>
+        <div class="rest-bar-track"><div id="rest-bar-fill" class="rest-bar-fill"></div></div>
+        <span id="rest-bar-text" class="rest-bar-text"></span>
+      </div>
       <div id="play-info" class="play-info"></div>
       <div id="game-host" class="game-host"></div>
     </section>
@@ -130,11 +135,25 @@
           <button id="btn-rest-toggle" class="btn diff-btn rest-toggle"></button>
         </div>
         <div class="mode-section">
+          <h3>📋 游玩记录 <small>家长可以看到什么时候玩的、玩了多久</small></h3>
+          <button id="btn-log-open" class="btn diff-btn">查看游玩记录</button>
+        </div>
+        <div class="mode-section">
           <h3>🗂️ 数据</h3>
-          <button id="btn-reset-save" class="btn diff-btn danger-btn">清空所有纪录</button>
+          <button id="btn-reset-save" class="btn diff-btn danger-btn">清空所有纪录（含游玩记录）</button>
         </div>
         <button id="btn-settings-close" class="btn btn-ghost">关闭</button>
         <p id="settings-version" class="settings-version"></p>
+      </div>
+    </div>
+
+    <!-- 游玩记录弹层 -->
+    <div id="overlay-log" class="overlay overlay-top">
+      <div class="panel log-panel">
+        <h2>📋 游玩记录</h2>
+        <p id="log-summary" class="log-summary"></p>
+        <div id="log-list" class="log-list"></div>
+        <button id="btn-log-close" class="btn btn-ghost">关闭</button>
       </div>
     </div>
 
