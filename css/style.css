@@ -810,6 +810,36 @@ svg .blink {
 @keyframes bad-pulse { 50% { opacity: 0.4; } }
 .queens-tip { font-size: 12px; color: var(--ink-soft); }
 
+/* ---------- 水果消消乐 ---------- */
+.match3-board {
+  display: grid;
+  gap: 3px;
+  width: min(94vw, 390px);
+  background: var(--white);
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+  padding: 5px;
+}
+.match3-cell {
+  aspect-ratio: 1;
+  border: none;
+  border-radius: 8px;
+  background: var(--soft);
+  font-size: clamp(16px, 5.6vw, 26px);
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+}
+.match3-cell.sel { background: var(--sel); box-shadow: inset 0 0 0 2.5px var(--pink-deep); transform: scale(0.9); }
+.match3-cell.pop { animation: match3-pop 0.32s ease; }
+@keyframes match3-pop { 0% { transform: scale(1.2); opacity: 1; } 100% { transform: scale(0.25); opacity: 0; } }
+.match3-cell.shake { animation: match3-shake 0.3s ease; }
+@keyframes match3-shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
 /* ---------- 小屏适配 ---------- */
 @media (max-height: 700px) {
   .game-grid { gap: 8px; }
