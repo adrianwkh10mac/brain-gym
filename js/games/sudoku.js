@@ -15,8 +15,8 @@ BrainGym.register({
   // 闯关：挖洞渐多；深关允许的错误次数越来越少
   challenge(lv) {
     return {
-      holes: Math.min(30 + lv * 2, 56),
-      maxMistakes: lv < 15 ? 3 : lv < 30 ? 2 : 1,
+      holes: Math.min(30 + Math.round(lv * 0.68), 64),
+      maxMistakes: lv < 18 ? 3 : lv < 38 ? 2 : 1,
     };
   },
   start(host, params, api) {

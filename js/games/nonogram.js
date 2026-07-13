@@ -13,8 +13,8 @@ BrainGym.register({
   ],
   challenge(lv) {
     return {
-      size: lv <= 2 ? 5 : lv <= 6 ? 10 : 15,
-      maxMistakes: lv < 12 ? 3 : lv < 25 ? 2 : 1,
+      size: lv <= 3 ? 5 : lv <= 12 ? 10 : lv <= 30 ? 15 : 20,
+      maxMistakes: lv < 15 ? 3 : lv < 35 ? 2 : 1,
     };
   },
   start(host, params, api) {

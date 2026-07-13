@@ -14,7 +14,7 @@ BrainGym.register({
     { key: 'xx', label: '10×10 疯狂', params: { size: 10 } },
   ],
   challenge(lv) {
-    return { size: Math.min(5 + Math.floor((lv - 1) / 3), 10) };
+    return { size: Math.min(5 + Math.floor((lv - 1) / 4), 14) };
   },
   start(host, params, api) {
     const COLORS = ['#F06292', '#4FC3F7', '#FFB74D', '#81C784', '#BA68C8', '#FF8A65',

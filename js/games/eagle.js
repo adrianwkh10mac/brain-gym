@@ -16,14 +16,14 @@ BrainGym.register({
   // 闯关：格子渐多、色差渐小、轮数渐多、限时渐紧
   // 保底线：色差 ≥3（人眼可辨），大棋盘每轮 ≥5 秒（可完成）
   challenge(lv) {
-    const rounds = 3 + Math.floor(lv / 8);
-    const grid = Math.min(3 + Math.ceil(lv / 3), 11);
-    const perRoundFloor = grid >= 9 ? 5 : 3.5;
+    const rounds = 3 + Math.floor(lv / 6);
+    const grid = Math.min(3 + Math.ceil(lv / 4), 13);
+    const perRoundFloor = grid >= 9 ? 4.5 : 3.5;
     return {
       grid,
-      delta: Math.max(3, 18 - lv * 0.8),
+      delta: Math.max(2.5, 17 - lv * 0.35),
       rounds,
-      timeLimit: Math.ceil(rounds * Math.max(perRoundFloor, 7 - lv * 0.15)),
+      timeLimit: Math.ceil(rounds * Math.max(perRoundFloor, 7.5 - lv * 0.11)),
     };
   },
   start(host, params, api) {

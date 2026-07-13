@@ -17,9 +17,9 @@ BrainGym.register({
   challenge(lv) {
     const boss = lv % 10 === 0 ? 1 : 0;
     return {
-      dist: Math.min(300 + lv * 80, 2000),
-      speed: Math.min(240 + lv * 14, 560),
-      ramp: Math.min(6 + lv, 22),
+      dist: Math.min(300 + lv * 45, 2550),
+      speed: Math.min(240 + lv * 7.4, 610),
+      ramp: Math.min(6 + Math.round(lv * 0.4), 26),
       boss,
     };
   },

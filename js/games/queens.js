@@ -14,7 +14,7 @@ BrainGym.register({
     { key: 'xx', label: '11×11 疯狂', params: { n: 11 } },
   ],
   challenge(lv) {
-    return { n: Math.min(5 + Math.ceil(lv / 2), 11) };
+    return { n: Math.min(5 + Math.ceil(lv / 5), 11) };
   },
   start(host, params, api) {
     const REGION_COLORS = ['#FFD6E0', '#C9EEE3', '#FFE9B8', '#DCD2F7', '#FFDCC9',

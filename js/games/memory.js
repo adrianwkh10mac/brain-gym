@@ -15,11 +15,11 @@ BrainGym.register({
   ],
   // 闯关：牌渐多、预览时间渐短、允许失误渐少（保底 3 次）
   challenge(lv) {
-    const pairs = Math.min(3 + lv, 30);
+    const pairs = Math.min(3 + Math.round(lv * 0.6), 30);
     return {
       pairs,
       preview: true,
-      previewMs: Math.max(1200, 3000 - (lv - 1) * 80),
+      previewMs: Math.max(900, 3000 - (lv - 1) * 45),
       maxMiss: Math.max(3, Math.round(pairs * 1.6) - Math.floor(lv / 4)),
     };
   },

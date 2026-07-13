@@ -17,11 +17,11 @@ BrainGym.register({
   challenge(lv) {
     const isBoss = lv % 5 === 0;
     return {
-      waves: isBoss ? 0 : Math.min(2 + Math.floor(lv / 4), 5),
-      perWave: Math.min(6 + Math.floor(lv / 2), 14),
-      ehp: lv < 8 ? 1 : 2,
-      fireRate: Math.max(750, 2100 - lv * 60),
-      boss: isBoss ? Math.min(24 + lv * 3, 180) : 0,
+      waves: isBoss ? 0 : Math.min(2 + Math.floor(lv / 10), 6),
+      perWave: Math.min(6 + Math.floor(lv / 3), 18),
+      ehp: lv < 8 ? 1 : lv < 25 ? 2 : 3,
+      fireRate: Math.max(550, 2100 - lv * 32),
+      boss: isBoss ? Math.min(24 + lv * 4, 220) : 0,
     };
   },
   start(host, params, api) {

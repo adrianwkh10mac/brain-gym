@@ -16,13 +16,13 @@ BrainGym.register({
   ],
   // 闯关：每 3 关升一档格子；7×7 之后进入倒序模式，限时无限收紧（但保底可完成）
   challenge(lv) {
-    const n = Math.min(3 + Math.floor((lv - 1) / 3), 7);
-    const step = (lv - 1) % 3;
-    const reverse = lv >= 16;
-    const deep = Math.floor(Math.max(0, lv - 16) / 3); // 倒序之后继续加压
+    const n = Math.min(3 + Math.floor((lv - 1) / 6), 9);
+    const step = (lv - 1) % 6;
+    const reverse = lv >= 20;
+    const deep = Math.floor(Math.max(0, lv - 20) / 2); // 倒序之后继续加压
     const timeLimit = Math.max(
-      Math.ceil(n * n * 0.75),
-      Math.round(n * n * 1.4 - step * n * 1.2 - deep * 2)
+      Math.ceil(n * n * 0.65),
+      Math.round(n * n * 1.5 - step * n * 0.5 - deep * 1.5)
     );
     return { n, timeLimit, reverse };
   },

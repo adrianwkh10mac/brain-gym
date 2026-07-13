@@ -210,8 +210,8 @@ var BrainGym = (function () {
     };
   }
 
-  // 主线 30 关：打通第 30 关 = 大结局，之后进入无限模式
-  const FINAL_LEVEL = 30;
+  // 主线 50 关：打通第 50 关 = 大结局，之后进入无限模式
+  const FINAL_LEVEL = 50;
 
   function finishWin(s, stats) {
     s.done = true;
@@ -245,7 +245,7 @@ var BrainGym = (function () {
     let statsHtml = `<div class="stat-line">⏱️ 用时 <b>${formatTime(time)}</b></div>`;
     if (stats && stats.detail) statsHtml += `<div class="stat-line">${stats.detail}</div>`;
     if (isEnding) {
-      statsHtml += `<div class="stat-line ending-line">🎬 大结局达成！你已成为「${def.name}」大师！<br>第 31 关起进入无限模式，难度继续攀升，去创造传说吧～</div>`;
+      statsHtml += `<div class="stat-line ending-line">🎬 大结局达成！你已成为「${def.name}」大师！<br>第 ${FINAL_LEVEL + 1} 关起进入无限模式，难度继续攀升，去创造传说吧～</div>`;
     }
     $('result-title').textContent = isEnding ? '👑 主线通关！大结局！'
       : s.mode === 'challenge' ? `🎉 第 ${s.level} 关通过！` : '🎉 完成！';
@@ -253,7 +253,7 @@ var BrainGym = (function () {
     $('result-record').textContent = recordMsg;
     const main = $('btn-result-main');
     if (s.mode === 'challenge') {
-      main.textContent = isEnding ? '进入无限模式（第 31 关）' : `下一关（第 ${s.level + 1} 关）`;
+      main.textContent = isEnding ? `进入无限模式（第 ${FINAL_LEVEL + 1} 关）` : `下一关（第 ${s.level + 1} 关）`;
       main.onclick = () => { closeRest(); startGame(s.gameId, 'challenge', s.level + 1); };
     } else {
       main.textContent = '再来一局';
@@ -423,7 +423,7 @@ var BrainGym = (function () {
           <span class="gc-name">${def.name}</span>
           <span class="gc-tag">${def.tag}</span>
           <span class="gc-record">${save.ending || save.challenge >= FINAL_LEVEL ? '👑 已通关 · 第 ' + save.challenge + ' 关'
-            : save.challenge ? '🏔️ 第 ' + save.challenge + '/30 关'
+            : save.challenge ? '🏔️ 第 ' + save.challenge + '/' + FINAL_LEVEL + ' 关'
             : (save.plays ? '玩过 ' + save.plays + ' 次' : 'NEW!')}</span>`;
         card.onclick = () => openMode(id);
         grid.appendChild(card);

@@ -15,7 +15,7 @@ BrainGym.register({
   ],
   // 上限 30：再大手机上通道就细到看不清了
   challenge(lv) {
-    return { size: Math.min(6 + lv * 2, 30) };
+    return { size: Math.min(6 + Math.round(lv * 0.5), 30) };
   },
   start(host, params, api) {
     const size = params.size;

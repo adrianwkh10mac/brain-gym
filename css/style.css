@@ -821,6 +821,7 @@ svg .blink {
   padding: 5px;
 }
 .match3-cell {
+  position: relative;
   aspect-ratio: 1;
   border: none;
   border-radius: 8px;
@@ -828,6 +829,7 @@ svg .blink {
   font-size: clamp(16px, 5.6vw, 26px);
   cursor: pointer;
   padding: 0;
+  overflow: hidden;
   transition: transform 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
 }
 .match3-cell.sel { background: var(--sel); box-shadow: inset 0 0 0 2.5px var(--pink-deep); transform: scale(0.9); }
@@ -839,6 +841,21 @@ svg .blink {
   25% { transform: translateX(-4px); }
   75% { transform: translateX(4px); }
 }
+/* Super Power：条纹特殊水果（清行/清列）+ 彩虹炸弹（清同色） */
+.match3-cell.stripe-h::before, .match3-cell.stripe-v::before {
+  content: '';
+  position: absolute;
+  background: rgba(255, 255, 255, 0.6);
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.8);
+  pointer-events: none;
+}
+.match3-cell.stripe-h::before { left: 0; right: 0; top: 50%; height: 24%; transform: translateY(-50%); }
+.match3-cell.stripe-v::before { top: 0; bottom: 0; left: 50%; width: 24%; transform: translateX(-50%); }
+.match3-cell.bomb {
+  background: conic-gradient(from 0deg, #ff8a80, #ffd54f, #81d4fa, #ce93d8, #ff8a80);
+  animation: match3-bomb-spin 2.6s linear infinite;
+}
+@keyframes match3-bomb-spin { to { filter: hue-rotate(360deg); } }
 
 /* ---------- 小屏适配 ---------- */
 @media (max-height: 700px) {

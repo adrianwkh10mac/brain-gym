@@ -14,8 +14,8 @@ BrainGym.register({
   ],
   // 闯关：尺寸递增到 6×6，之后步数预算越收越紧（保底 = 格数×10，高手可完成）
   challenge(lv) {
-    const n = lv <= 2 ? 3 : lv <= 5 ? 4 : lv <= 10 ? 5 : 6;
-    const budget = lv <= 8 ? 0 : Math.max(n * n * 10, 700 - (lv - 8) * 25);
+    const n = lv <= 2 ? 3 : lv <= 5 ? 4 : lv <= 10 ? 5 : lv <= 25 ? 6 : 7;
+    const budget = lv <= 8 ? 0 : Math.max(n * n * 8, 900 - (lv - 8) * 15);
     return { n, budget };
   },
   start(host, params, api) {

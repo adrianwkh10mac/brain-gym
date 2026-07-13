@@ -17,9 +17,9 @@ BrainGym.register({
   // 每 10 关旗子前有史莱姆王：踩 3 下才会倒，不打倒不给通关
   challenge(lv) {
     return {
-      len: Math.min(900 + lv * 250, 4200),
-      density: Math.min(0.2 + lv * 0.05, 0.85),
-      gapMax: Math.min(60 + lv * 5, 120),
+      len: Math.min(900 + lv * 90, 5400),
+      density: Math.min(0.2 + lv * 0.013, 0.85),
+      gapMax: Math.min(60 + lv * 1.3, 125),
       boss: lv % 10 === 0 ? 1 : 0,
     };
   },

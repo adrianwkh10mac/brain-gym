@@ -18,9 +18,9 @@ BrainGym.register({
   challenge(lv) {
     const boss = lv % 10 === 0 ? 1 : 0;
     return {
-      speed: Math.max(80, 210 - lv * 6) + (boss ? 25 : 0),
-      target: boss ? Math.min(8 + Math.floor(lv / 10) * 2, 20) : Math.min(8 + lv * 2, 60),
-      rocks: boss ? Math.min(5 + Math.floor(lv / 10) * 2, 13) : 0,
+      speed: Math.max(70, 230 - lv * 3.2) + (boss ? 25 : 0),
+      target: boss ? Math.min(8 + Math.floor(lv / 10) * 2, 20) : Math.min(8 + Math.round(lv * 1.5), 80),
+      rocks: boss ? Math.min(5 + Math.floor(lv / 8) * 2, 17) : 0,
       boss,
     };
   },
@@ -177,20 +177,25 @@ BrainGym.register({
       raf = requestAnimationFrame(loop);
     }
 
-    // 手势 + 键盘
-    let ts = null;
-    const onTS = e => { ts = [e.touches[0].clientX, e.touches[0].clientY]; };
-    const onTE = e => {
-      if (!ts) return;
-      const dx = e.changedTouches[0].clientX - ts[0];
-      const dy = e.changedTouches[0].clientY - ts[1];
-      ts = null;
-      if (Math.abs(dx) < 20 && Math.abs(dy) < 20) return;
+    // 拖动跟随：手指按住画面拖动，蛇头持续转向手指所在方向（类似摇杆）
+    let touchAnchor = null;
+    const DEAD_ZONE = 14; // 手指移动小于这个距离时不转向，避免手抖误触发
+    const followDir = (cx, cy) => {
+      if (!touchAnchor) return;
+      const dx = cx - touchAnchor[0];
+      const dy = cy - touchAnchor[1];
+      if (Math.abs(dx) < DEAD_ZONE && Math.abs(dy) < DEAD_ZONE) return;
       if (Math.abs(dx) > Math.abs(dy)) turn(dx > 0 ? 1 : -1, 0);
       else turn(0, dy > 0 ? 1 : -1);
+      touchAnchor = [cx, cy];
     };
+    const onTS = e => { touchAnchor = [e.touches[0].clientX, e.touches[0].clientY]; };
+    const onTM = e => { e.preventDefault(); followDir(e.touches[0].clientX, e.touches[0].clientY); };
+    const onTE = () => { touchAnchor = null; };
     canvas.addEventListener('touchstart', onTS, { passive: true });
+    canvas.addEventListener('touchmove', onTM, { passive: false });
     canvas.addEventListener('touchend', onTE, { passive: true });
+    canvas.addEventListener('touchcancel', onTE, { passive: true });
     const onKey = e => {
       const m = { ArrowUp: [0, -1], ArrowDown: [0, 1], ArrowLeft: [-1, 0], ArrowRight: [1, 0] };
       if (m[e.key]) { e.preventDefault(); turn(m[e.key][0], m[e.key][1]); }

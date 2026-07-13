@@ -16,8 +16,8 @@ BrainGym.register({
   // 闯关：目标水果越来越大（封顶西瓜后，改拼合成速度：允许丢的次数递减）
   // 每 10 关 BOSS：每丢 5 个就混进一颗合不了的铁栗子捣乱
   challenge(lv) {
-    const target = Math.min(3 + Math.ceil(lv / 2), 9);
-    const drops = target >= 9 ? Math.max(60, 130 - (lv - 12) * 5) : 0; // 0 = 不限
+    const target = Math.min(3 + Math.ceil(lv / 4), 9);
+    const drops = target >= 9 ? Math.max(45, 150 - (lv - 24) * 4) : 0; // 0 = 不限
     return { target, drops, boss: lv % 10 === 0 ? 1 : 0 };
   },
   start(host, params, api) {
