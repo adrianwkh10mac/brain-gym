@@ -8,16 +8,16 @@ BrainGym.register({
   cat: 'arcade',
   desc: '点击（或拖动瞄准后松手）从上方丢水果，两个一样的水果碰到会合成更大的！合出目标水果就赢，堆到顶上的红线就输。',
   practice: [
-    { key: 'e', label: '合出🍎', params: { target: 4 } },
-    { key: 'm', label: '合出🍑', params: { target: 6 } },
-    { key: 'h', label: '合出🍈', params: { target: 8 } },
-    { key: 'x', label: '合出🍉', params: { target: 9 } },
+    { key: 'e', label: '合出🍐', params: { target: 5, drops: 130 } },
+    { key: 'm', label: '合出🍍', params: { target: 7, drops: 150 } },
+    { key: 'h', label: '合出🍉', params: { target: 9, drops: 170 } },
+    { key: 'x', label: '合出🍉（捣乱版）', params: { target: 9, drops: 130, boss: 1 } },
   ],
-  // 闯关：目标水果越来越大（封顶西瓜后，改拼合成速度：允许丢的次数递减）
+  // 闯关：目标水果越来越大，丢的次数从第一关就开始收紧（不再无限丢）
   // 每 10 关 BOSS：每丢 5 个就混进一颗合不了的铁栗子捣乱
   challenge(lv) {
-    const target = Math.min(3 + Math.ceil(lv / 4), 9);
-    const drops = target >= 9 ? Math.max(45, 150 - (lv - 24) * 4) : 0; // 0 = 不限
+    const target = Math.min(4 + Math.ceil(lv / 4), 9);
+    const drops = Math.max(35, 180 - lv * 3);
     return { target, drops, boss: lv % 10 === 0 ? 1 : 0 };
   },
   start(host, params, api) {
@@ -39,11 +39,12 @@ BrainGym.register({
     const ctx = canvas.getContext('2d');
     const W = canvas.width, H = canvas.height;
     const U = W / 390;
-    const LOSE_Y = 86 * U;      // 红线
+    const LOSE_Y = 112 * U;      // 红线（比以前更靠上，篮子空间变小，更容易堆满）
     const G = 1900 * U;
+    const spawnRange = () => Math.min(6, Math.max(4, params.target - 3));
 
     let fruits = [];            // {x, y, vx, vy, tier, r}
-    let curTier = randInt(4), nextTier = randInt(4);
+    let curTier = randInt(spawnRange()), nextTier = randInt(spawnRange());
     let aimX = W / 2;
     let drops = 0, score = 0, best = 0;
     let dropCooldown = 0, overflowTime = 0;
@@ -63,7 +64,7 @@ BrainGym.register({
       } else {
         fruits.push({ x, y: 30 * U, vx: 0, vy: 60 * U, tier: curTier, r });
         curTier = nextTier;
-        nextTier = randInt(Math.min(5, params.target));
+        nextTier = randInt(spawnRange());
       }
       drops++;
       dropCooldown = 0.45;

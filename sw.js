@@ -2,7 +2,7 @@
 // 注意：浏览器判断"要不要更新"只看 sw.js 这个文件自身的字节内容有没有变化，
 // importScripts() 引入的文件变了不会触发更新检测。所以 VERSION 必须直接写在这里，
 // 不能只改 js/version.js。用 scripts/bump-version.js 一次性把两处一起改掉。
-const VERSION = 'brain-gym-v1.6.0';
+const VERSION = 'brain-gym-v1.6.1';
 const ASSETS = [
   './',
   './index.html',

@@ -8,17 +8,17 @@ BrainGym.register({
   cat: 'arcade',
   desc: '点一个水果，再点旁边相邻的一个来交换位置。凑齐 3 个以上同种水果连成一排（横或竖）就会消除，掉分！凑齐 4 个会变成💥条纹特殊水果（消除时清空整行或整列），凑齐 5 个会变成🌈彩虹炸弹（消除时清空棋盘上所有同种水果）。步数用完前拿到目标分数就算过关。',
   practice: [
-    { key: 'e', label: '简单', params: { n: 6, colors: 4, moves: 22, target: 55 } },
-    { key: 'm', label: '中等', params: { n: 7, colors: 5, moves: 22, target: 90 } },
-    { key: 'h', label: '困难', params: { n: 8, colors: 5, moves: 20, target: 130 } },
-    { key: 'x', label: '地狱', params: { n: 8, colors: 6, moves: 18, target: 170 } },
+    { key: 'e', label: '简单', params: { n: 6, colors: 4, moves: 20, target: 80 } },
+    { key: 'm', label: '中等', params: { n: 7, colors: 5, moves: 19, target: 130 } },
+    { key: 'h', label: '困难', params: { n: 8, colors: 6, moves: 17, target: 190 } },
+    { key: 'x', label: '地狱', params: { n: 8, colors: 7, moves: 15, target: 260 } },
   ],
   // 闯关：棋盘渐大、水果种类渐多（更难凑match）、步数渐少、目标分渐高
   challenge(lv) {
     const n = Math.min(6 + Math.floor(lv / 10), 9);
-    const colors = Math.min(4 + Math.floor(lv / 9), 7);
-    const moves = Math.max(12, 24 - Math.floor(lv / 4));
-    const target = Math.round(45 + lv * 8.5);
+    const colors = Math.min(5 + Math.floor(lv / 8), 7);
+    const moves = Math.max(10, 20 - Math.floor(lv / 5));
+    const target = Math.round(70 + lv * 11);
     return { n, colors, moves, target };
   },
   start(host, params, api) {
